@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from overrides import overrides
 
 from allennlp.common.util import START_SYMBOL, END_SYMBOL
 from allennlp.data.dataset_readers import DatasetReader, Seq2SeqDatasetReader
@@ -8,19 +9,18 @@ from allennlp.data.vocabulary import Vocabulary
 
 
 import logging
-
 logger = logging.getLogger(__name__)
 
-torch.manual_seed(1)
 
 
-@DatasetReader.register("addition-seq2seq")
+@DatasetReader.register("addition_seq2seq_datasetreader")
 class AdditionSeq2SeqDatasetReader(Seq2SeqDatasetReader):
     def __init__(self):
         super().__init__(lazy=False)
         self._source_tokenizer = CharacterTokenizer()
         self._target_tokenizer = CharacterTokenizer()
 
+    @overrides
     def _read(self, file_path):
         with open(file_path, "r") as data_file:
             logger.info("Reading instances from lines in file at: %s", file_path)
@@ -38,13 +38,3 @@ class AdditionSeq2SeqDatasetReader(Seq2SeqDatasetReader):
                     )
                 source_sequence, target_sequence = line_parts
                 yield self.text_to_instance(source_sequence, target_sequence)
-
-
-reader = AdditionSeq2SeqDatasetReader()
-train_dataset = reader.read("../data/train_100000_1000.csv")
-validation_dataset = reader.read("../data/val_300.csv")
-
-vocab = Vocabulary.from_instances(train_dataset + validation_dataset)
-
-print(vocab.print_statistics())
-print(train_dataset[0])
