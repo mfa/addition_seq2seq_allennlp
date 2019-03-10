@@ -37,6 +37,5 @@ local learning_rate = 0.1;
       "type": "adam",
     },
     "patience": patience,
-    "validation_metric": "+accuracy"
   }
 }
